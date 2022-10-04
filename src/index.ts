@@ -1,20 +1,18 @@
 #!/usr/bin/env ts-node-script
 import { App } from '@deepkit/app';
-import { Logger } from '@deepkit/logger';
-import { cli, Command } from '@deepkit/app';
 import { FrameworkModule } from '@deepkit/framework';
+import path from 'path';
+import { Config } from './config';
+import { RootModule } from './modules/Root.module';
 
-@cli.controller('test')
-export class TestCommand implements Command {
-    constructor(protected logger: Logger) {
-    }
+const app = new App({
+    config: Config,
+    imports: [new FrameworkModule, new RootModule],
+});
 
-    async execute() {
-        this.logger.log('Hello World!');
-    }
-}
+const envPath = path.resolve(__dirname, '..', '.env');
+app.loadConfigFromEnv({
+    envFilePath: envPath
+});
 
-new App({
-    controllers: [TestCommand],
-    imports: [new FrameworkModule]
-}).run();
+app.run();
