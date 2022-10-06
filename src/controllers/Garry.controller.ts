@@ -5,6 +5,7 @@ import {
   InteractionType,
   InteractionResponseType,
 } from 'discord-interactions';
+import { CommandsBaseImpl } from "../commands/CommandsBase";
 import { GyphyProvider } from "../providers/Gyphy";
 import { DiscordGroup } from "../types";
 
@@ -48,28 +49,16 @@ export class GarryController {
 		this.logger.info('body ', body);
 		if (type === InteractionType.APPLICATION_COMMAND) {
 			this.logger.info(body);
-			const { name } = data;
-			switch(name) {
-				case "ping": {
-					return this._pong();
-				}
-				case "server": {
-					return this._serverDesc();
-				}
-				case "user": {
-					return this._userDesc();
-				}
-				case "gif": {
-					const commandOption = data.options?.[0];
+			/** TODO: move gif commands into commands */
+			if (data.name === "gif") {
+				const commandOption = data.options?.[0];
 					if (!commandOption) {
 						return this._superWrongError();
 					}
-					return this._getGif(commandOption);
-				}
-				default: {
-					return this._unknown();
-				}
+				return this._getGif(commandOption);
 			}
+			/** Mb convert  CommandsBase into singelton, to reuse data across all inherentes */
+			return new CommandsBaseImpl(data).getCommand();
 		}
 	}
 
@@ -85,47 +74,6 @@ export class GarryController {
 				content: gyphyReponse.data[0]?.embed_url ?? `Nothing epic found for term ${term}` 
 			}
 		}
-	}
-
-	private _unknown() {
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				content: `And what am I supposed to do with this?`
-			}
-		}
-	}
-
-	private _userDesc() {
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				content: `I am studiying you all to give the best answer later on.`
-			}
-		}
-	}
-
-	private _serverDesc() {
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				content: `Honestly, I have no idea what this server is all about...`
-			}
-		}
-	}
-
-	private _pong() {
-		return {
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: {
-				content: `Pong: ${this._getRandomEmoji()}`
-			}
-		}
-	}
-
-	private _getRandomEmoji() {
-		const emojiList = ['😭','😄','😌','🤓','😎','😤','🤖','😶‍🌫️','🌏','📸','💿','👋','🌊','✨'];
-		return emojiList[Math.floor(Math.random() * emojiList.length)];
 	}
 
 	private _superWrongError() {
