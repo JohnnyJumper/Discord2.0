@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node-script
+#!/usr/bin/env node
 import { App } from '@deepkit/app';
 import { FrameworkModule } from '@deepkit/framework';
 import path from 'path';
