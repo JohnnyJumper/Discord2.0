@@ -26,23 +26,23 @@ export class GarryController {
 			return { type: InteractionResponseType.PONG };
 		}
 
-		this.logger.info('body ', body);
 		if (type === InteractionType.APPLICATION_COMMAND) {
-			this.logger.info(body);
 			const { name } = body.data;
-			let command: (arg?: any) => any;
-			
-			if (isCommandName(name)) {
-				if (name === CommandName.gif) {
-					const commandOption = body.data.options?.[0];
-					if (!commandOption) {
-						return this.commandsProvider.getUnknownResponse();
-					}
-					return this.commandsProvider.getCommand(name, [commandOption])
-				}
-				return this.commandsProvider.getCommand(name);
+			this.logger.info(`Received following command: ${name}, looking it up`);
+
+			if (!isCommandName(name)) {
+				return this.commandsProvider.getUnknownResponse();
 			}
-			return this.commandsProvider.getUnknownResponse();
+			
+			if (name === CommandName.gif) {
+				const commandOption = body.data.options?.[0];
+				if (!commandOption) {
+					return this.commandsProvider.getUnknownResponse();
+				}
+				return this.commandsProvider.getCommand(name, [commandOption])
+			}
+			
+			return this.commandsProvider.getCommand(name);
 		}
 	}
 }
