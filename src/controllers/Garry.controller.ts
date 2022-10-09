@@ -5,7 +5,7 @@ import {
   InteractionType,
   InteractionResponseType,
 } from 'discord-interactions';
-import { CommandsProvider } from "../providers/CommandsBaseImpl";
+import { CommandsProvider } from "../providers/CommandsProvider";
 import { CommandName, DiscordGroup, DiscordIntegrationConnect, DiscordIntegrationGeneral, isCommandName, isDiscordIntegrationConnect } from "../types";
 
 @http.controller('/garry').group(DiscordGroup)
