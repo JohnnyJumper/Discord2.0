@@ -4,6 +4,7 @@ import {
 } from 'discord-interactions';
 import { CommandList, CommandName, DiscordCommandOption } from "../types";
 import { GyphyProvider } from "./Gyphy";
+import { DiscordClient } from "./DiscordClient";
 
 export class CommandsProvider {
 
@@ -11,7 +12,8 @@ export class CommandsProvider {
 
 	constructor(
 		private logger: Logger,
-		private gyphy: GyphyProvider
+		private gyphy: GyphyProvider,
+		private client: DiscordClient,
 	) {
 		this.commandList = {
 			[CommandName.ping]: this._pong.bind(this),
@@ -66,7 +68,7 @@ export class CommandsProvider {
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {
-				content: gyphyReponse.data[0]?.embed_url ?? `Nothing epic found for term ${term}` 
+				content: gyphyReponse.data[0]?.embed_url ?? `Nothing epic found for term ${term}`
 			}
 		}
 	}
