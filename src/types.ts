@@ -49,6 +49,34 @@ export type DiscordIntegrationConnect = {
 	type: InteractionType.PING,
 }
 
+export type DiscordInteractionData = {
+	id: string,
+	name:	string,
+	type:	number,
+	resolved?:	any,
+	options?:	any,
+	guild_id?:	string,
+	target_id?:	string,
+}
+
+export type DiscordInteractionEvent = {
+	id: string,
+	application_id: string,
+	type: InteractionType,
+	data?:	DiscordInteractionData,
+	guild_id?:	string,
+	channel_id?:	string,
+	member?:	any,
+	user?:	any,
+	token: string,
+	version: number,
+	message?:	any,
+	app_permissions?:	string,
+	locale?:	string,
+	guild_locale?:	string
+}
+
+
 export const isDiscordIntegrationConnect = (obj: any): obj is DiscordIntegrationConnect => {
 	return (!!obj && "type" in obj && obj.type === InteractionType.PING);
 }
