@@ -2,6 +2,7 @@ import { Logger } from "@deepkit/logger";
 import { deserialize } from "@deepkit/type";
 import fetch from "node-fetch";
 import { Config } from "../config";
+import util from 'util';
 
 type GyphyData = {
 	type: string,
@@ -54,16 +55,17 @@ export class GyphyProvider {
 		this.searchEndpoint = "https://api.giphy.com/v1/gifs/search";
 	}
 
-	async search(term: string): Promise<GyphyResponse> {
-		const url = this._buildSearchUrl(term);
+	async search(term: string, offset?: string): Promise<GyphyResponse> {
+		this.logger.info(`LOOK HERE`, {term, offset});
+		const url = this._buildSearchUrl(term, offset);
 		this.logger.info(`Fetching from: ${url}`);
 		const response = await fetch(url, { method: "GET" } );
 		const rawJson = await response.json();
-		this.logger.info(rawJson);
+		this.logger.info(util.inspect(rawJson, false, null));
 		return deserialize<GyphyResponse>(rawJson);
 	}
 
-	private _buildSearchUrl(term: string) {
-		return `${this.searchEndpoint}?api_key=${this.gyphyKey}&limit=1&lang=en&q=${term}`;
+	private _buildSearchUrl(term: string, offset: string = "0") {
+		return `${this.searchEndpoint}?api_key=${this.gyphyKey}&limit=1&q=${term}&offset=${offset}`;
 	}
 }

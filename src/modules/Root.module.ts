@@ -4,8 +4,6 @@ import { GarryController } from "../controllers/Garry.controller";
 import { DiscordVerifier } from "../listeners/DiscordVerifier";
 import { GyphyProvider } from "../providers/Gyphy";
 import { CommandsProvider } from "../providers/CommandsProvider";
-import { DiscordClient } from "../providers/DiscordClient";
-import { GatewayIntentBits } from "discord.js";
 
 export class RootModule extends createModule({
 	config: Config,
@@ -13,16 +11,6 @@ export class RootModule extends createModule({
 	listeners: [DiscordVerifier],
 	providers: [
 		GyphyProvider,
-		CommandsProvider,
-		{
-			provide: DiscordClient,
-			useFactory: () => {
-				return new DiscordClient({
-					intents: [GatewayIntentBits.Guilds],
-					rest: { }
-
-				});
-			}
-		}
+		CommandsProvider
 	]
 }) { }

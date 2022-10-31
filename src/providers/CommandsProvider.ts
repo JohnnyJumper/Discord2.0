@@ -4,7 +4,6 @@ import {
 } from 'discord-interactions';
 import { CommandList, CommandName, DiscordCommandOption } from "../types";
 import { GyphyProvider } from "./Gyphy";
-import { DiscordClient } from "./DiscordClient";
 
 export class CommandsProvider {
 
@@ -12,8 +11,7 @@ export class CommandsProvider {
 
 	constructor(
 		private logger: Logger,
-		private gyphy: GyphyProvider,
-		private client: DiscordClient,
+		private gyphy: GyphyProvider, 
 	) {
 		this.commandList = {
 			[CommandName.ping]: this._pong.bind(this),
@@ -56,7 +54,8 @@ export class CommandsProvider {
 	});
 
 	private async _getGif(args?: DiscordCommandOption[]) {
-		if (!args || args.length !== 1) {
+		this.logger.error(args);
+		if (!args) {
 			return  this._unknown();
 		}
 		const arg = args[0];
@@ -64,11 +63,37 @@ export class CommandsProvider {
 			return this._unknown();
 		}
 		const term = arg.value;
-		const gyphyReponse =  await this.gyphy.search(term);
+		const offset = args[1]?.value ?? "0";
+		const gyphyReponse =  await this.gyphy.search(term, offset);
+		this.logger.info({
+			arg0: args[0],
+			arg1: args[1],
+			value1: args[1]?.value
+		})
 		return {
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data: {
-				content: gyphyReponse.data[0]?.embed_url ?? `Nothing epic found for term ${term}`
+				flags: 1 << 6, // make it ephemernal
+				content: gyphyReponse.data[0]?.images?.original?.url ?? `Nothing epic found for term ${term}`,
+				components: [{
+					type: 1,
+					components: [
+						{
+							style: 2,
+							label: `Shuffle`,
+							custom_id: `shuffle:${term}:${offset}`,
+							disabled: false,
+							type: 2
+						},
+						{
+							style: 1,
+							label: `Send`,
+							custom_id: `send:${term}:${offset}`,
+							disabled: false,
+							type: 2
+						}
+					]
+				}]
 			}
 		}
 	}
